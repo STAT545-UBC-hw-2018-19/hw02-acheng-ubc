@@ -1,0 +1,65 @@
+---
+title: "STAT545 Assignment 2"
+author: "Alex"
+date: "September 24, 2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Initializing Gapminder Dataset and Libraries
+```{r, warning=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(gapminder)
+```
+
+## "Smell test" the data
+```{r}
+typeof(gapminder)
+```
+
+The gapminder object is a list. 
+
+```{r}
+class(gapminder)
+
+```
+
+It's class is a tibble, which is a type of data frame. 
+
+```{r}
+dim(gapminder)
+```
+
+Using the`dims()` function we get that there are 1706 rows (observations) for 6 columns (variables). We could also get size information using the `ncol()` or `nrow()` functions
+
+```{r}
+summary(gapminder)
+class(gapminder$country)
+class(gapminder$continent)
+class(gapminder$year)
+class(gapminder$lifeExp)
+class(gapminder$pop)
+class(gapminder$gdpPercap)
+```
+
+Using `summary()` we can get a quick overview of the variables in *gapminder* and surmise the data type of each variable, but we can also make sure by calling the `class()` function.
+
+From this we get the following data types in *gapminder*:
+
+| Variable | Data Type |
+|---------|-------|
+| country | factor |
+| continent | factor |
+| year | integer |
+| lifeExp | numeric |
+| pop | integer |
+| gdpPercap | numeric |
+
+
+
+
+
