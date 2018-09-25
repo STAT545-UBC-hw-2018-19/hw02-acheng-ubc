@@ -10,10 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Initializing Gapminder Dataset and Libraries
-```{r, warning=FALSE}
+```{r, message=FALSE, warning=FALSE}
 library(tidyverse)
 library(ggplot2)
 library(gapminder)
+
+# these two packages help make very pretty tables
+library(knitr)
+library(kableExtra)
 ```
 
 ## "Smell test" the data
@@ -59,7 +63,53 @@ From this we get the following data types in *gapminder*:
 | pop | integer |
 | gdpPercap | numeric |
 
+## Exploring Individual Variable
 
+### Categorical Variable
+Let's look at some details about the `continent` variable:
+```{r}
+summary(gapminder$continent)
+```
+The possible values are `Africa, America, Asia, Europe, and Oceania`.
+
+Most countries exist in Africa, while the least countries exist in Oceania. Below is a plot of the number of countries in each continent:
+
+```{r}
+gapminder %>%
+  ggplot(aes(continent)) +
+  geom_bar(aes(fill = continent)) + 
+  labs(y = "Number of Countries")
+```
+
+### Quantitative Variable
+Let's look at some details about the `lifeExp` variable. This variable tells us the life expectancy of a certain population of a country for a specific year.
+
+```{r}
+summary(gapminder$lifeExp)
+```
+
+A quick summary tells us the mean lifeExp over all countries is 59.47 years, and that the lifeExp variable ranges between 23.6 and 82.6 years. Below is the distribution of lifeExp in different continents:
+
+```{r}
+gapminder %>%
+  ggplot(aes(lifeExp)) +
+  geom_histogram(aes(fill = continent)) +
+  facet_wrap( ~ continent) + 
+  guides(fill=FALSE)
+```
+
+Let's calculate at the mean and standard deviation lifeExp of each continent. The function `aggregate()` allows us to apply a function to each column of a sub dataframe that we specify:
+```{r}
+a <- aggregate(gapminder$lifeExp ~ gapminder$continent, FUN=mean) # this is to save our output into a matrix so that we can make it into a nice table
+b <- aggregate(gapminder$lifeExp ~ gapminder$continent, FUN=sd)
+a[3] <- b[2]
+colnames(a) <- c("Continent", "Mean Life Exp (Yrs)", "SD Life Exp (Yrs)") #rename the columns
+a %>%
+  kable("html") %>% #kable() is a package that lets us make pretty tables!
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+From this we see that Oceania has the highest life expectancy on average, while Africa has the lowest life expectancy on average.
 
 
 

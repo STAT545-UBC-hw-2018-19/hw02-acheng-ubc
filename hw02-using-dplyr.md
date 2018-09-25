@@ -8,22 +8,12 @@ Initializing Gapminder Dataset and Libraries
 
 ``` r
 library(tidyverse)
-```
-
-    ## -- Attaching packages ---------------------------------- tidyverse 1.2.1 --
-
-    ## v ggplot2 3.0.0     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.6
-    ## v tidyr   0.8.1     v stringr 1.2.0
-    ## v readr   1.1.1     v forcats 0.2.0
-
-    ## -- Conflicts ------------------------------------- tidyverse_conflicts() --
-    ## x dplyr::filter() masks stats::filter()
-    ## x dplyr::lag()    masks stats::lag()
-
-``` r
 library(ggplot2)
 library(gapminder)
+
+# these two packages help make very pretty tables
+library(knitr)
+library(kableExtra)
 ```
 
 "Smell test" the data
@@ -122,3 +112,140 @@ From this we get the following data types in *gapminder*:
 | lifeExp   | numeric   |
 | pop       | integer   |
 | gdpPercap | numeric   |
+
+Exploring Individual Variable
+-----------------------------
+
+### Categorical Variable
+
+Let's look at some details about the `continent` variable:
+
+``` r
+summary(gapminder$continent)
+```
+
+    ##   Africa Americas     Asia   Europe  Oceania 
+    ##      624      300      396      360       24
+
+The possible values are `Africa, America, Asia, Europe, and Oceania`.
+
+Most countries exist in Africa, while the least countries exist in Oceania. Below is a plot of the number of countries in each continent:
+
+``` r
+gapminder %>%
+  ggplot(aes(continent)) +
+  geom_bar(aes(fill = continent)) + 
+  labs(y = "Number of Countries")
+```
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-7-1.png)
+
+### Quantitative Variable
+
+Let's look at some details about the `lifeExp` variable. This variable tells us the life expectancy of a certain population of a country for a specific year.
+
+``` r
+summary(gapminder$lifeExp)
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##   23.60   48.20   60.71   59.47   70.85   82.60
+
+A quick summary tells us the mean lifeExp over all countries is 59.47 years. Below is the distribution of lifeExp in different continents:
+
+``` r
+gapminder %>%
+  ggplot(aes(lifeExp)) +
+  geom_histogram(aes(fill = continent)) +
+  facet_wrap( ~ continent) + 
+  guides(fill=FALSE)
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+Let's calculate at the mean and standard deviation lifeExp of each continent. The function `aggregate()` allows us to apply a function to each column of a sub dataframe that we specify:
+
+``` r
+a <- aggregate(gapminder$lifeExp ~ gapminder$continent, FUN=mean) # this is to save our output into a matrix so that we can make it into a nice table
+b <- aggregate(gapminder$lifeExp ~ gapminder$continent, FUN=sd)
+a[3] <- b[2]
+colnames(a) <- c("Continent", "Mean Life Exp (Yrs)", "SD Life Exp (Yrs)") #rename the columns
+a %>%
+  kable("html") %>% #kable() is a package that lets us make pretty tables!
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = F)
+```
+
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Continent
+</th>
+<th style="text-align:right;">
+Mean Life Exp (Yrs)
+</th>
+<th style="text-align:right;">
+SD Life Exp (Yrs)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Africa
+</td>
+<td style="text-align:right;">
+48.86533
+</td>
+<td style="text-align:right;">
+9.150210
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Americas
+</td>
+<td style="text-align:right;">
+64.65874
+</td>
+<td style="text-align:right;">
+9.345088
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Asia
+</td>
+<td style="text-align:right;">
+60.06490
+</td>
+<td style="text-align:right;">
+11.864532
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Europe
+</td>
+<td style="text-align:right;">
+71.90369
+</td>
+<td style="text-align:right;">
+5.433178
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Oceania
+</td>
+<td style="text-align:right;">
+74.32621
+</td>
+<td style="text-align:right;">
+3.795611
+</td>
+</tr>
+</tbody>
+</table>
