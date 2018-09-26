@@ -113,8 +113,8 @@ From this we get the following data types in *gapminder*:
 | pop       | integer   |
 | gdpPercap | numeric   |
 
-Exploring Individual Variable
------------------------------
+Exploring Individual Variables
+------------------------------
 
 ### Categorical Variable
 
@@ -248,7 +248,74 @@ Oceania
 </table>
 From this we see that Oceania has the highest life expectancy on average, while Africa has the lowest life expectancy on average.
 
-### Practice using filter(), select(), and %&gt;%
+More Plot Types
+---------------
+
+Let's explore some style of plots!
+
+### Boxplot
+
+``` r
+gapminder %>%
+  ggplot(aes(continent, gdpPercap)) +
+  geom_boxplot(aes(fill = continent), alpha=0.2) +
+  guides(fill = FALSE)
+```
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+It seems like a boxplot is not a good choice here since there are many outliers. Perhaps a violin plot and/or a jitter plot would be more useful:
+
+### Violin Plot + Jitterplot
+
+``` r
+gapminder %>%
+  ggplot(aes(continent, gdpPercap)) +
+  geom_jitter(alpha = 0.1) +
+  geom_violin(aes(colour = "red")) +
+  guides(fill=FALSE)
+```
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-12-1.png)
+
+With the violin plot overlaid on a jitter plot, we get a better idea of the distribution of gdpPercap in each continent. The distribution is largely dominated by low GDP per capita countries; perhaps a log y-scale would help:
+
+### Violin + Jitter Plot with Log Y Axis
+
+``` r
+gapminder %>%
+  ggplot(aes(continent, gdpPercap)) +
+  geom_jitter(alpha = 0.1) +
+  geom_violin(aes(colour = "red")) +
+  scale_y_log10() +
+  guides(fill = FALSE)
+```
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-13-1.png)
+
+With the log y-axis scale this plot is a lot easier to read!
+
+### ScatterPlot + Line
+
+Let's try to visualize how life expectancy changed over time in Canada and the United States.
+
+``` r
+gapminder %>%
+  filter(country %in% c("Canada", "United States")) %>%
+  select(country, year, lifeExp) %>%
+  ggplot(aes(year, lifeExp)) +
+  geom_point() +
+  geom_line(aes(group=country, colour=country))
+```
+
+    ## Warning: package 'bindrcpp' was built under R version 3.4.4
+
+![](hw02-using-dplyr_files/figure-markdown_github/unnamed-chunk-14-1.png)
+
+From this plot we see that Canada has always had a higher life expectancy than the United States (yay go Canada!).
+
+Practice using filter(), select(), and %&gt;%
+---------------------------------------------
 
 Let's look at how Canada compares to the top 10 countries in terms of GDP per capita in 2007!
 
